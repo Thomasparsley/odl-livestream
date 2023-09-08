@@ -1,0 +1,1 @@
+export const SERIAL_PATH = "/dev/tty.usbserial-1140"; // <-- EDIT HERE
