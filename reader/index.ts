@@ -3,15 +3,18 @@
 // Copyright (c) 2023 Tomáš Petržela (email@thomasparsley.cz)
 //
 
+import axios from "axios";
 import { SerialPort } from "serialport";
 import { ReadlineParser } from "@serialport/parser-readline";
 
-import axios from "axios";
-
-import { READ_COMMAND, parseData } from "./kocab";
+import { SERIAL_PATH } from "./config";
+import {
+    READ_COMMAND,
+    parseData,
+    getRandomExample,
+} from "./kocab";
 
 const BAUD_RATE = 115200;
-const SERIAL_PATH = "/dev/tty.usbserial-1140";
 
 const READS_PER_SECOND = 15;
 const READ_INTERVAL = 1000 / READS_PER_SECOND;
@@ -23,6 +26,8 @@ const UTF_8_ENCODE = new TextEncoder();
 // SERIAL
 //
 
+let isSerialOpen: undefined | boolean = undefined;
+
 const serial = new SerialPort({
     path: SERIAL_PATH,
     baudRate: BAUD_RATE,
@@ -31,7 +36,10 @@ const serial = new SerialPort({
 });
 
 serial.on("open", (err) => {
+    isSerialOpen = true;
+
     if (err) {
+        isSerialOpen = false;
         console.log("Error while opening serial port:");
         console.error(err);
         return;
@@ -44,27 +52,42 @@ serial.on("open", (err) => {
 // LINE READER
 //
 
-const parser = serial.pipe(new ReadlineParser({ delimiter: END_OF_LINE_HEX }));
-parser.on("data", (data: string) => {
-    const parsedTimer = parseData(data);
-    if (!parsedTimer) {
-        return;
-    }
+if (isSerialOpen) {
+    const parser = serial.pipe(new ReadlineParser({ delimiter: END_OF_LINE_HEX }));
+    parser.on("data", (data: string) => parseAndSendData(data));
+}
 
-    // send to API
-    axios.post("http://localhost:3000/api/kv?key=stopwatch", parsedTimer)
-});
 
 //
 // READ LOOP
 //
 
-setInterval(() => writeStringToSerial(READ_COMMAND), READ_INTERVAL);
+if (isSerialOpen) {
+    // If serial port is open, read from it
+    setInterval(() => writeStringToSerial(READ_COMMAND), READ_INTERVAL);
+} else {
+    // Else simulate connection
+    setInterval(() => {
+        const data = getRandomExample();
+        parseAndSendData(data);
+    }, READ_INTERVAL)
+}
+
 
 
 //
 // HELPERS
 //
+
+function parseAndSendData(data: string): void {
+    const parsedTimer = parseData(data);
+    if (!parsedTimer) {
+        return;
+    }
+
+    // send to KV store
+    axios.post("http://localhost:3000/api/kv?key=stopwatch", parsedTimer)
+}
 
 function writeStringToSerial(str: string): void {
     writeBytesToSerial(makeByteCommand(str));
