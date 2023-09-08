@@ -9,13 +9,13 @@ import axios from "axios";
 
 
 //
-// Examples
+// Examples of states
 //
 
-// Neutral state
+/** Neutral state */
 const EXAMPLE_NEUTRAL_STATE = "2:0:1:0:1:0:1:0:1:0:0:0:0:1";
 
-// Left and right target running
+/** Left and right target running */
 const EXAMPLE_LEFT_RIGHT = "2:0:4:6270:2:6270:2:0:1:0:0:0:0:2";
 
 // Final
@@ -27,6 +27,19 @@ const EXAMPLE_ONLY_RIGHT = "2:0:4:5390:8:18070:2:0:1:0:0:0:0:2";
 
 // Countdown
 const EXAMPLE_COUNTDOWN = "2:300000:1:0:1:0:1:0:1:0:0:0:0:1";
+
+const EXAMPLES = [
+  EXAMPLE_NEUTRAL_STATE,
+  EXAMPLE_LEFT_RIGHT,
+  EXAMPLE_FINAL,
+  EXAMPLE_ONLY_RIGHT,
+  EXAMPLE_COUNTDOWN
+] as const;
+
+export function getRandomExample() {
+  const idx = Math.floor(Math.random() * EXAMPLES.length);
+  return EXAMPLES[idx];
+}
 
 /*
 console.log(parseData(EXAMPLE_NEUTRAL_STATE));
