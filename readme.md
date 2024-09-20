@@ -16,14 +16,14 @@ _Pro spuštění není potřeba mít připojenou časomíru k PC. Pokud časomí
 
 ### Nastevení portu
 
-V souboru `./reader/config.ts` můžeme nastavit sériový port.
+V souboru `./reader/index.ts:12` můžeme nastavit sériový port.
 ```ts
-export const SERIAL_PATH = "/dev/tty.usbserial-1140"; // <-- EDIT HERE
+  path: "/dev/tty.usbserial-1140", // <-- EDIT HERE
 ```
 
 Pokud máme připojenou časomíru na portu 4, úprava bude vypadat takto
 ```ts
-export const SERIAL_PATH = "COM4";
+  path: "COM4",
 ```
 
 ### Spuštění 

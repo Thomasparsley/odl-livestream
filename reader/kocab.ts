@@ -1,12 +1,11 @@
 //
 // Created on Fri Jun 30 2023
-// Copyright (c) 2023 Tomáš Petržela (email@thomasparsley.cz)
+// Updated on Fri Sep 20 2024
+//
+// Copyright (c) 2023-2024 Tomáš Petržela (email@thomasparsley.cz)
 //
 
 const MINIMAL_LEN_OF_DATA = 27;
-
-import axios from "axios";
-
 
 //
 // Examples of states
